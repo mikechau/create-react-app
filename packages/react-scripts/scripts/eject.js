@@ -60,7 +60,10 @@ prompt(
     path.join('config', 'jest', 'fileTransform.js'),
     path.join('scripts', 'build.js'),
     path.join('scripts', 'start.js'),
-    path.join('scripts', 'test.js')
+    path.join('scripts', 'test.js'),
+    path.join('config', 'jest', 'typescriptTransform.js'),
+    path.join('tsconfig.json'),
+    path.join('tslint.json')
   ];
 
   // Ensure that the app folder is clean and we won't override any files

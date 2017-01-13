@@ -1,0 +1,3 @@
+{
+  "extends": "@mikechau/react-scripts-ts-sass/tslint.json"
+}

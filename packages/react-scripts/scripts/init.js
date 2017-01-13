@@ -75,7 +75,7 @@ module.exports = function(appPath, appName, verbose, originalDirectory) {
       verbose && '--verbose'
     ].filter(function(e) { return e; });
   }
-  args.push('react', 'react-dom');
+  args.push('react', 'react-dom', '@types/node', '@types/react', '@types/react-dom', '@types/jest');
 
   console.log('Installing react and react-dom using ' + command + '...');
   console.log();

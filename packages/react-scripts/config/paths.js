@@ -19,6 +19,16 @@ function resolveApp(relativePath) {
   return path.resolve(appDirectory, relativePath);
 }
 
+function resolveAppIndex() {
+  var jsIndex = resolveApp('src/index.js');
+
+  if (fs.existsSync(jsIndex)) {
+    return jsIndex;
+  } else {
+    return resolveApp('src/index.tsx');
+  }
+}
+
 // We support resolving modules according to `NODE_PATH`.
 // This lets you use absolute paths in imports inside large monorepos:
 // https://github.com/facebookincubator/create-react-app/issues/253.
@@ -45,7 +55,7 @@ module.exports = {
   appBuild: resolveApp('build'),
   appPublic: resolveApp('public'),
   appHtml: resolveApp('public/index.html'),
-  appIndexJs: resolveApp('src/index.js'),
+  appIndexJs: resolveAppIndex(),
   appPackageJson: resolveApp('package.json'),
   appSrc: resolveApp('src'),
   yarnLockFile: resolveApp('yarn.lock'),
@@ -60,12 +70,22 @@ function resolveOwn(relativePath) {
   return path.resolve(__dirname, relativePath);
 }
 
+function resolveOwnAppIndex() {
+  var jsIndex = resolveOwn('../template/src/index.js');
+
+  if (fs.existsSync(jsIndex)) {
+    return jsIndex;
+  } else {
+    return resolveOwn('../template/src/index.tsx');
+  }
+}
+
 // config before eject: we're in ./node_modules/react-scripts/config/
 module.exports = {
   appBuild: resolveApp('build'),
   appPublic: resolveApp('public'),
   appHtml: resolveApp('public/index.html'),
-  appIndexJs: resolveApp('src/index.js'),
+  appIndexJs: resolveAppIndex(),
   appPackageJson: resolveApp('package.json'),
   appSrc: resolveApp('src'),
   yarnLockFile: resolveApp('yarn.lock'),
@@ -82,7 +102,7 @@ if (__dirname.indexOf(path.join('packages', 'react-scripts', 'config')) !== -1) 
     appBuild: resolveOwn('../../../build'),
     appPublic: resolveOwn('../template/public'),
     appHtml: resolveOwn('../template/public/index.html'),
-    appIndexJs: resolveOwn('../template/src/index.js'),
+    appIndexJs: resolveOwnAppIndex(),
     appPackageJson: resolveOwn('../package.json'),
     appSrc: resolveOwn('../template/src'),
     yarnLockFile: resolveOwn('../template/yarn.lock'),

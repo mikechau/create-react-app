@@ -94,7 +94,7 @@ module.exports = {
     // We also include JSX as a common component filename extension to support
     // some tools, although we do not recommend using it, see:
     // https://github.com/facebookincubator/create-react-app/issues/290
-    extensions: ['.js', '.json', '.jsx', ''],
+    extensions: ['.ts', '.tsx', '.js', '.json', '.jsx', ''],
     alias: {
       // Support React Native Web
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
@@ -113,6 +113,11 @@ module.exports = {
     // First, run the linter.
     // It's important to do this before Babel processes the JS.
     preLoaders: [
+      {
+        test: /\.(ts|tsx)$/,
+        loader: 'tslint',
+        include: paths.appSrc
+      },
       {
         test: /\.(js|jsx)$/,
         loader: 'eslint',
@@ -135,6 +140,7 @@ module.exports = {
       {
         exclude: [
           /\.html$/,
+          /\.(ts|tsx)$/,
           /\.(js|jsx)$/,
           /\.css$/,
           /\.json$/,
@@ -144,6 +150,18 @@ module.exports = {
         query: {
           limit: 10000,
           name: 'static/media/[name].[hash:8].[ext]'
+        }
+      },
+      // Process TS with Typescript.
+      {
+        test: /\.(ts|tsx)$/,
+        include: paths.appSrc,
+        loader: 'ts',
+        query: {
+          complierOptions: {
+            rootDir: paths.appSrc
+          },
+          configFileName: path.resolve(__dirname, '../tsconfig.json')
         }
       },
       // Process JS with Babel.
@@ -198,6 +216,10 @@ module.exports = {
     // e.g. to enable no-console and no-debugger only in production.
     configFile: path.join(__dirname, '../.eslintrc'),
     useEslintrc: false
+  },
+
+  tslint: {
+    tsConfigFile: path.join(__dirname, '../tsconfig.json')
   },
   // @remove-on-eject-end
   // We use PostCSS for autoprefixing only.
