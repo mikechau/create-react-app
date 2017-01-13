@@ -1,6 +1,6 @@
 # react-scripts-ts-sass
 
-This package is a fork from the vanilla `react-scripts`, in order to add custom support for [Typescript](https://www.typescriptlang.org/) and [SASS](http://sass-lang.com/).
+This package is a fork from the vanilla `react-scripts`, in order to add custom support for [Typescript](https://www.typescriptlang.org/) and [Sass](http://sass-lang.com/).
 
 This package includes scripts and configuration used by [Create React App](https://github.com/facebookincubator/create-react-app).
 Please refer to its documentation:
