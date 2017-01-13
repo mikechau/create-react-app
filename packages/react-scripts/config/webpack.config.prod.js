@@ -143,6 +143,7 @@ module.exports = {
           /\.(ts|tsx)$/,
           /\.(js|jsx)$/,
           /\.css$/,
+          /\.scss$/,
           /\.json$/,
           /\.svg$/
         ],
@@ -190,8 +191,12 @@ module.exports = {
       // in the main CSS file.
       {
         test: /\.css$/,
-        loader: ExtractTextPlugin.extract('style', 'css?importLoaders=1!postcss')
+        loader: ExtractTextPlugin.extract('style', 'css?sourceMap&importLoaders=1!postcss')
         // Note: this won't work without `new ExtractTextPlugin()` in `plugins`.
+      },
+      {
+        test: /\.scss$/,
+        loader: ExtractTextPlugin.extract('style', 'css?sourcepMap&importLoaders=3!postcss!resolve-url!sass?sourceMap')
       },
       // JSON is not enabled by default in Webpack but both Node and Browserify
       // allow it implicitly so we also enable it.
