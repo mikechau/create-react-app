@@ -1,6 +1,6 @@
 {
   "name": "@mikechau/react-scripts-ts-sass",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Configuration and scripts for Create React App.",
   "repository": "mikechau/create-react-app#custom/react-scripts-ts-sass",
   "license": "BSD-3-Clause",
