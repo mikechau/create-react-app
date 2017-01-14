@@ -63,7 +63,8 @@ prompt(
     path.join('scripts', 'test.js'),
     path.join('config', 'jest', 'typescriptTransform.js'),
     path.join('tsconfig.json'),
-    path.join('tslint.json')
+    path.join('tslint.json'),
+    path.join('config', 'webpackConfigHelper.js')
   ];
 
   // Ensure that the app folder is clean and we won't override any files
