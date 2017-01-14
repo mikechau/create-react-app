@@ -163,13 +163,7 @@ module.exports = {
       {
         test: /\.(ts|tsx)$/,
         include: paths.appSrc,
-        loader: 'ts',
-        query: {
-          complierOptions: {
-            rootDir: paths.appSrc
-          },
-          configFileName: path.resolve(__dirname, '../tsconfig.json')
-        }
+        loader: 'ts'
       },
       // Process JS with Babel.
       {
@@ -227,10 +221,6 @@ module.exports = {
     // e.g. to enable no-console and no-debugger only in production.
     configFile: path.join(__dirname, '../.eslintrc'),
     useEslintrc: false
-  },
-
-  tslint: {
-    tsConfigFile: path.join(__dirname, '../tsconfig.json')
   },
   // @remove-on-eject-end
   // We use PostCSS for autoprefixing only.

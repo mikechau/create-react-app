@@ -2,9 +2,7 @@
 
 var tsc = require('typescript');
 var paths = require('../paths');
-var tsConfig = require('../../tsconfig.json');
-
-var config = Object.assign({}, tsConfig.compilerOptions, { rootDir: paths.appSrc })
+var tsConfig = require(paths.appTsconfigJson);
 
 module.exports = {
   process(src, path) {
