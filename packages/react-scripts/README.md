@@ -20,6 +20,8 @@ JS/ES6 support has been kept in, so you can use JS/ES6 and Typescript in the sam
 
 ## Usage
 
+By default, you should have a `src/index.js` or `src/index.tsx` entry point. This will create the primary `app` bundle.
+
 ### Multiple Entry Points
 
 Your application `src` directory should contain a `index.js` or `index.tsx` file.
