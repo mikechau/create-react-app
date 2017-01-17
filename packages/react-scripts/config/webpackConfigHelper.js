@@ -6,6 +6,14 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 var paths = require('./paths');
 
 function alphabetSort(a, b) {
+  if (a.names[0] === 'base') {
+    return -1;
+  }
+
+  if (b.names[0] === 'base') {
+    return 1;
+  }
+
   if (a.names[0] > b.names[0]) {
     return 1;
   }
