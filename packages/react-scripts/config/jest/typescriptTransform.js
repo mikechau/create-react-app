@@ -9,7 +9,7 @@ module.exports = {
     if (path.endsWith('.ts') || path.endsWith('.tsx')) {
       return tsc.transpile(
         src,
-        config,
+        tsConfig,
         path,
         []
       );
