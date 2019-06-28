@@ -1,8 +1,10 @@
 {
-  "lerna": "2.0.0-beta.30",
+  "lerna": "2.6.0",
+  "npmClient": "yarn",
+  "useWorkspaces": true,
   "version": "independent",
   "changelog": {
-    "repo": "facebookincubator/create-react-app",
+    "repo": "facebook/create-react-app",
     "labels": {
       "tag: new feature": ":rocket: New Feature",
       "tag: breaking change": ":boom: Breaking Change",
