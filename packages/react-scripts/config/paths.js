@@ -1,95 +1,147 @@
 // @remove-on-eject-begin
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 // @remove-on-eject-end
+'use strict';
 
-var path = require('path');
-var fs = require('fs');
+const path = require('path');
+const fs = require('fs');
+const getPublicUrlOrPath = require('react-dev-utils/getPublicUrlOrPath');
 
 // Make sure any symlinks in the project folder are resolved:
-// https://github.com/facebookincubator/create-react-app/issues/637
-var appDirectory = fs.realpathSync(process.cwd());
-function resolveApp(relativePath) {
-  return path.resolve(appDirectory, relativePath);
-}
+// https://github.com/facebook/create-react-app/issues/637
+const appDirectory = fs.realpathSync(process.cwd());
+const resolveApp = relativePath => path.resolve(appDirectory, relativePath);
 
-// We support resolving modules according to `NODE_PATH`.
-// This lets you use absolute paths in imports inside large monorepos:
-// https://github.com/facebookincubator/create-react-app/issues/253.
+// We use `PUBLIC_URL` environment variable or "homepage" field to infer
+// "public path" at which the app is served.
+// webpack needs to know it to put the right <script> hrefs into HTML even in
+// single-page apps that may serve index.html for nested URLs like /todos/42.
+// We can't use a relative path in HTML because we don't want to load something
+// like /todos/42/static/js/bundle.7289d.js. We have to know the root.
+const publicUrlOrPath = getPublicUrlOrPath(
+  process.env.NODE_ENV === 'development',
+  require(resolveApp('package.json')).homepage,
+  process.env.PUBLIC_URL
+);
 
-// It works similar to `NODE_PATH` in Node itself:
-// https://nodejs.org/api/modules.html#modules_loading_from_the_global_folders
+const buildPath = process.env.BUILD_PATH || 'build';
 
-// We will export `nodePaths` as an array of absolute paths.
-// It will then be used by Webpack configs.
-// Jest doesn’t need this because it already handles `NODE_PATH` out of the box.
+const moduleFileExtensions = [
+  'web.mjs',
+  'mjs',
+  'web.js',
+  'js',
+  'web.ts',
+  'ts',
+  'web.tsx',
+  'tsx',
+  'json',
+  'web.jsx',
+  'jsx',
+];
 
-// Note that unlike in Node, only *relative* paths from `NODE_PATH` are honored.
-// Otherwise, we risk importing Node.js core modules into an app instead of Webpack shims.
-// https://github.com/facebookincubator/create-react-app/issues/1023#issuecomment-265344421
+// Resolve file paths in the same order as webpack
+const resolveModule = (resolveFn, filePath) => {
+  const extension = moduleFileExtensions.find(extension =>
+    fs.existsSync(resolveFn(`${filePath}.${extension}`))
+  );
 
-var nodePaths = (process.env.NODE_PATH || '')
-  .split(process.platform === 'win32' ? ';' : ':')
-  .filter(Boolean)
-  .filter(folder => !path.isAbsolute(folder))
-  .map(resolveApp);
+  if (extension) {
+    return resolveFn(`${filePath}.${extension}`);
+  }
+
+  return resolveFn(`${filePath}.js`);
+};
 
 // config after eject: we're in ./config/
 module.exports = {
-  appBuild: resolveApp('build'),
+  dotenv: resolveApp('.env'),
+  appPath: resolveApp('.'),
+  appBuild: resolveApp(buildPath),
   appPublic: resolveApp('public'),
   appHtml: resolveApp('public/index.html'),
-  appIndexJs: resolveApp('src/index.js'),
+  appIndexJs: resolveModule(resolveApp, 'src/index'),
   appPackageJson: resolveApp('package.json'),
   appSrc: resolveApp('src'),
+  appTsConfig: resolveApp('tsconfig.json'),
+  appJsConfig: resolveApp('jsconfig.json'),
   yarnLockFile: resolveApp('yarn.lock'),
-  testsSetup: resolveApp('src/setupTests.js'),
+  testsSetup: resolveModule(resolveApp, 'src/setupTests'),
+  proxySetup: resolveApp('src/setupProxy.js'),
   appNodeModules: resolveApp('node_modules'),
-  ownNodeModules: resolveApp('node_modules'),
-  nodePaths: nodePaths
+  swSrc: resolveModule(resolveApp, 'src/service-worker'),
+  publicUrlOrPath,
 };
 
 // @remove-on-eject-begin
-function resolveOwn(relativePath) {
-  return path.resolve(__dirname, relativePath);
-}
+const resolveOwn = relativePath => path.resolve(__dirname, '..', relativePath);
 
 // config before eject: we're in ./node_modules/react-scripts/config/
 module.exports = {
-  appBuild: resolveApp('build'),
+  dotenv: resolveApp('.env'),
+  appPath: resolveApp('.'),
+  appBuild: resolveApp(buildPath),
   appPublic: resolveApp('public'),
   appHtml: resolveApp('public/index.html'),
-  appIndexJs: resolveApp('src/index.js'),
+  appIndexJs: resolveModule(resolveApp, 'src/index'),
   appPackageJson: resolveApp('package.json'),
   appSrc: resolveApp('src'),
+  appTsConfig: resolveApp('tsconfig.json'),
+  appJsConfig: resolveApp('jsconfig.json'),
   yarnLockFile: resolveApp('yarn.lock'),
-  testsSetup: resolveApp('src/setupTests.js'),
+  testsSetup: resolveModule(resolveApp, 'src/setupTests'),
+  proxySetup: resolveApp('src/setupProxy.js'),
   appNodeModules: resolveApp('node_modules'),
-  // this is empty with npm3 but node resolution searches higher anyway:
-  ownNodeModules: resolveOwn('../node_modules'),
-  nodePaths: nodePaths
+  swSrc: resolveModule(resolveApp, 'src/service-worker'),
+  publicUrlOrPath,
+  // These properties only exist before ejecting:
+  ownPath: resolveOwn('.'),
+  ownNodeModules: resolveOwn('node_modules'), // This is empty on npm 3
+  appTypeDeclarations: resolveApp('src/react-app-env.d.ts'),
+  ownTypeDeclarations: resolveOwn('lib/react-app.d.ts'),
 };
 
+const ownPackageJson = require('../package.json');
+const reactScriptsPath = resolveApp(`node_modules/${ownPackageJson.name}`);
+const reactScriptsLinked =
+  fs.existsSync(reactScriptsPath) &&
+  fs.lstatSync(reactScriptsPath).isSymbolicLink();
+
 // config before publish: we're in ./packages/react-scripts/config/
-if (__dirname.indexOf(path.join('packages', 'react-scripts', 'config')) !== -1) {
+if (
+  !reactScriptsLinked &&
+  __dirname.indexOf(path.join('packages', 'react-scripts', 'config')) !== -1
+) {
+  const templatePath = '../cra-template/template';
   module.exports = {
-    appBuild: resolveOwn('../../../build'),
-    appPublic: resolveOwn('../template/public'),
-    appHtml: resolveOwn('../template/public/index.html'),
-    appIndexJs: resolveOwn('../template/src/index.js'),
-    appPackageJson: resolveOwn('../package.json'),
-    appSrc: resolveOwn('../template/src'),
-    yarnLockFile: resolveOwn('../template/yarn.lock'),
-    testsSetup: resolveOwn('../template/src/setupTests.js'),
-    appNodeModules: resolveOwn('../node_modules'),
-    ownNodeModules: resolveOwn('../node_modules'),
-    nodePaths: nodePaths
+    dotenv: resolveOwn(`${templatePath}/.env`),
+    appPath: resolveApp('.'),
+    appBuild: resolveOwn(path.join('../..', buildPath)),
+    appPublic: resolveOwn(`${templatePath}/public`),
+    appHtml: resolveOwn(`${templatePath}/public/index.html`),
+    appIndexJs: resolveModule(resolveOwn, `${templatePath}/src/index`),
+    appPackageJson: resolveOwn('package.json'),
+    appSrc: resolveOwn(`${templatePath}/src`),
+    appTsConfig: resolveOwn(`${templatePath}/tsconfig.json`),
+    appJsConfig: resolveOwn(`${templatePath}/jsconfig.json`),
+    yarnLockFile: resolveOwn(`${templatePath}/yarn.lock`),
+    testsSetup: resolveModule(resolveOwn, `${templatePath}/src/setupTests`),
+    proxySetup: resolveOwn(`${templatePath}/src/setupProxy.js`),
+    appNodeModules: resolveOwn('node_modules'),
+    swSrc: resolveModule(resolveOwn, `${templatePath}/src/service-worker`),
+    publicUrlOrPath,
+    // These properties only exist before ejecting:
+    ownPath: resolveOwn('.'),
+    ownNodeModules: resolveOwn('node_modules'),
+    appTypeDeclarations: resolveOwn(`${templatePath}/src/react-app-env.d.ts`),
+    ownTypeDeclarations: resolveOwn('lib/react-app.d.ts'),
   };
 }
 // @remove-on-eject-end
+
+module.exports.moduleFileExtensions = moduleFileExtensions;
